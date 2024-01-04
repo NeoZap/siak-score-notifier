@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    volumes:
+      - ./main.py:/app/main.py
+    env_file:
+      - .env
+    environment:
+      - IS_IN_DOCKER=True
+    depends_on:
+      selenium_chrome:
+        condition: service_healthy
+
+  selenium_chrome:
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    healthcheck:
+      test: curl --fail http://localhost:4444/ || exit 1
+      interval: 30s
+      timeout: 30s
+      retries: 5
