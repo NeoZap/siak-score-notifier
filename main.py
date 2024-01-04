@@ -67,7 +67,7 @@ class SIAKPortal:
         return "Mahasiswa" in self.driver.page_source
 
 
-class SIAKCourseScrapper:
+class SIAKCourseScraper:
     def __init__(self, driver: WebDriver):
         self.driver = driver
 
@@ -264,7 +264,7 @@ def init_webdriver() -> WebDriver:
 
 def run(driver: WebDriver):
     portal = SIAKPortal(driver)
-    scraper = SIAKCourseScrapper(driver)
+    scraper = SIAKCourseScraper(driver)
     storage = JSONFileStorage("last.json")
 
     portal.login()
