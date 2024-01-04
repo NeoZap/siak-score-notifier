@@ -1,3 +1,8 @@
+# Bytecode compilations
+__pycache__/
+*.pyc
+
+# Local files
 .env
 last.json
-logs.txt
+run.log
