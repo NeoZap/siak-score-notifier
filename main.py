@@ -1,8 +1,9 @@
 import json
 import time
-import datetime
 import httpx
 import os
+import pytz
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -223,29 +224,42 @@ class DiscordWebhookSender:
             log.success("Score modification sent!")
 
 
-class Logger:
+class TimeZoneLogger:
     INFO_COLOR = "\033[94m"  # Blue
     ERROR_COLOR = "\033[91m"  # Red
     SUCCESS_COLOR = "\033[92m"  # Green
     RESET_COLOR = "\033[0m"  # Reset color to default
 
+    def __init__(self, zone: str, log_file: Optional[str] = None):
+        self.timezone = pytz.timezone(zone)
+        self.log_file = log_file
+
+    def _get_current_dt(self):
+        return datetime.now(self.timezone)
+
+    def _log(self, message: str):
+        if self.log_file:
+            with open(self.log_file, "a") as fd:
+                fd.write(message + "\n")
+        print(message)
+
     def info(self, message: str):
-        print(
-            f"[{self.INFO_COLOR}*{self.RESET_COLOR}] {message} - {datetime.datetime.now()}"
+        self._log(
+            f"[{self.INFO_COLOR}*{self.RESET_COLOR}] ({self._get_current_dt()}) - {message}"
         )
 
     def error(self, message: str):
-        print(
-            f"[{self.ERROR_COLOR}!{self.RESET_COLOR}] {message} - {datetime.datetime.now()}"
+        self._log(
+            f"[{self.ERROR_COLOR}!{self.RESET_COLOR}] ({self._get_current_dt()}) - {message}"
         )
 
     def success(self, message: str):
-        print(
-            f"[{self.SUCCESS_COLOR}+{self.RESET_COLOR}] {message} - {datetime.datetime.now()}"
+        self._log(
+            f"[{self.SUCCESS_COLOR}+{self.RESET_COLOR}] ({self._get_current_dt()}) - {message}"
         )
 
 
-log = Logger()
+log = TimeZoneLogger(zone="Asia/Jakarta", log_file="logs.txt")
 
 
 def init_webdriver() -> WebDriver:
@@ -264,6 +278,8 @@ def init_webdriver() -> WebDriver:
 
 
 def run(driver: WebDriver):
+    log.info("Running...")
+
     portal = SIAKPortal(driver)
     scraper = SIAKCourseScraper(driver)
     storage = JSONFileStorage("last.json")
