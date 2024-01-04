@@ -9,6 +9,7 @@ services:
       - .env
     environment:
       - IS_IN_DOCKER=True
+      - SE_NODE_SESSION_TIMEOUT=3600
     depends_on:
       selenium_chrome:
         condition: service_healthy

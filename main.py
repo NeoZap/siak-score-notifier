@@ -24,7 +24,7 @@ ACADEMIC_URL = "https://academic.ui.ac.id/main/Academic/"
 SELENIUM_HUB_URL = "http://selenium_chrome:4444/wd/hub"
 
 # Sleep duration between requests (in seconds)
-SLEEP_DURATION = 3600
+SLEEP_DURATION = 1800
 
 # Environment variables (includes secrets)
 load_dotenv()
@@ -228,12 +228,6 @@ class Logger:
     ERROR_COLOR = "\033[91m"  # Red
     SUCCESS_COLOR = "\033[92m"  # Green
     RESET_COLOR = "\033[0m"  # Reset color to default
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
 
     def info(self, message: str):
         print(
@@ -290,7 +284,11 @@ def run(driver: WebDriver):
     sender.send()
 
     log.success("Done! Waiting for next request...")
-    time.sleep(SLEEP_DURATION)
+
+    # Sleep for SLEEP_DURATION seconds, while not idling
+    for _ in range(SLEEP_DURATION // 60):
+        time.sleep(60)
+        driver.current_url
 
 
 def main():
